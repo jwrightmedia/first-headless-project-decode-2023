@@ -8,7 +8,8 @@ import {
   Container,
   NavigationMenu,
   Hero,
-  SEO,
+  SEO, 
+  PostExcerpt
 } from '../components';
 
 export default function Component() {
@@ -20,6 +21,7 @@ export default function Component() {
     data?.generalSettings;
   const primaryMenu = data?.headerMenuItems?.nodes ?? [];
   const footerMenu = data?.footerMenuItems?.nodes ?? [];
+  const posts = data?.posts?.nodes;
 
   return (
     <>
@@ -31,10 +33,11 @@ export default function Component() {
       />
       <Main>
         <Container>
-          <Hero title={'Front Page'} />
+          <Hero title={'Headless Demo'} />
           <div className="text-center">
-            <p>This page is utilizing the "front-page" WordPress template.</p>
-            <code>wp-templates/front-page.js</code>
+            {posts.map(post => {
+              return (<PostExcerpt post={post} key={post.title}></PostExcerpt>)
+            })}
           </div>
         </Container>
       </Main>
@@ -50,6 +53,19 @@ Component.query = gql`
     $headerLocation: MenuLocationEnum
     $footerLocation: MenuLocationEnum
   ) {
+    posts(first: 10) {
+      nodes {
+        title
+        excerpt
+        uri
+        categories {
+          nodes {
+            name
+            uri
+          }
+        }
+      }
+    }
     generalSettings {
       ...BlogInfoFragment
     }
